@@ -8,18 +8,16 @@ import LoginPage from './LoginPage';
 
 const Hero = () => {
   const [userInput, setUserInput] = useState();
-  const { messages, setMassages } = useContext(MessagesContext);
+  const { messages, setMessages } = useContext(MessagesContext);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [openDailog, setOpenDailog] = useState(false);
-  const [warning, setWarning] = useState(true);
 
   const onGenerate = (input) => {
-    if (!userDetail?.name && warning === true) {
-      setWarning(false);
+    if (!userDetail?.name) {
       setOpenDailog(true);
       return;
     }
-    setMassages({
+    setMessages({
       role: 'user',
       content: input,
     });

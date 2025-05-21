@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useContext } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,30 +12,51 @@ import { Button } from '@/components/ui/button';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { UserDetailContext } from '@/context/user.detail.context';
+import { v4 as uuid4 } from 'uuid';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 const LoginPage = ({ openDailog, closeDailog }) => {
-  const [userDetail, setUserDetail] = useState(UserDetailContext);
+  const { setUserDetail } = useContext(UserDetailContext);
+  const createUser = useMutation(api.users.CreateUser);
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log(tokenResponse);
-      const userInfo = await axios.get(
-        'https://www.googleapis.com/oauth2/v3/userinfo',
-        { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
-      );
+      try {
+        const userInfo = await axios.get(
+          'https://www.googleapis.com/oauth2/v3/userinfo',
+          {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+          },
+        );
 
-      console.log(userInfo);
-      setUserDetail(userInfo?.data);
-      closeDailog(false);
+        const user = userInfo.data;
+
+        await createUser({
+          name: user.name,
+          email: user.email,
+          picture: user.picture,
+          uid: uuid4(),
+        });
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+
+        setUserDetail(user);
+        closeDailog(false);
+      } catch (err) {
+        console.error('Google login error:', err);
+      }
     },
-    onError: (errorResponse) => console.log(errorResponse),
+    onError: (errorResponse) => console.log('Login Failed:', errorResponse),
   });
 
   return (
     <Dialog open={openDailog} onOpenChange={closeDailog}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle></DialogTitle>
+          <DialogTitle>Sign In</DialogTitle>
           <DialogDescription
             className="flex items-center flex-col justify-center"
             asChild
