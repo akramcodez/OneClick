@@ -5,22 +5,36 @@ import React, { useState, useContext } from 'react';
 import { MessagesContext } from '@/context/messages.context';
 import { UserDetailContext } from '@/context/user.detail.context';
 import LoginPage from './LoginPage';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useRouter } from 'next/navigation';
 
 const Hero = () => {
   const [userInput, setUserInput] = useState();
   const { messages, setMessages } = useContext(MessagesContext);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [openDailog, setOpenDailog] = useState(false);
+  const CreateWorkspace = useMutation(api.workspace.CreateWorkspace);
+  const router = useRouter();
 
-  const onGenerate = (input) => {
+  const onGenerate = async (input) => {
     if (!userDetail?.name) {
       setOpenDailog(true);
       return;
     }
-    setMessages({
+
+    const msg = {
       role: 'user',
       content: input,
+    };
+
+    setMessages(msg);
+
+    const workspaceId = await CreateWorkspace({
+      user: userDetail?._id,
+      message: [msg],
     });
+    router.push(`/workspace/${workspaceId}`);
   };
 
   return (
