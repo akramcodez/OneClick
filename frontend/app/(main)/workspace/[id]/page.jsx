@@ -11,7 +11,7 @@ export default function Workspace() {
           flex-shrink-0 
           w-full h-1/2 
           md:h-full md:w-[30%] 
-          lg:w-[40%] 
+          lg:w-[35%] 
           overflow-auto
         "
       >
@@ -24,8 +24,9 @@ export default function Workspace() {
           flex-grow 
           w-full h-1/2 
           md:h-[90%] md:w-[70%] 
-          lg:w-[60%] 
+          lg:w-[65%] 
           overflow-auto
+          md:overflow-hidden
         "
       >
         <CodeView />

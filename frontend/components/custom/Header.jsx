@@ -8,7 +8,10 @@ const Header = () => {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   return (
     <div className="sticky top-0 bg-black p-4 flex justify-between items-center">
-      <Image src={'/logo.webp'} alt="Logo" width={30} height={30} />
+      <a href="/">
+        {' '}
+        <Image src={'/logo.webp'} alt="Logo" width={30} height={30} />
+      </a>
       {!userDetail?.name && (
         <div className="flex gap-5">
           <Button variant="ghost" className="h-[30px]">

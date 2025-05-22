@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import axios from 'axios';
 
 import { api } from '@/convex/_generated/api';
@@ -10,6 +10,7 @@ import { MessagesContext } from '@/context/messages.context';
 import Prompt from '@/data/Prompt';
 import { ArrowRight, Loader2Icon } from 'lucide-react';
 import { UserDetailContext } from '@/context/user.detail.context';
+import ReactMarkdown from 'react-markdown';
 
 const ChatView = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ const ChatView = () => {
   const isLoading = useRef(false);
   const { userDetail } = useContext(UserDetailContext);
   const [loading, setLoading] = useState(false);
+  const UpdateMessages = useMutation(api.workspace.UpdateMessages);
 
   // Fetch workspace messages
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
@@ -42,7 +44,7 @@ const ChatView = () => {
 
     if (
       last?.role === 'user' &&
-      secondLast?.role !== 'assistant' &&
+      secondLast?.role !== 'OnClick' &&
       !isLoading.current
     ) {
       isLoading.current = true;
@@ -57,30 +59,36 @@ const ChatView = () => {
     setLoading(true);
     isLoading.current = true;
 
-    const response = await axios.post('/api/ai-chat', { prompt });
-    setMessages([
-      ...messagesArr,
-      { role: 'assistant', content: response.data.message },
-    ]);
+    const response = await axios.post('/api/ai-cha', { prompt });
+    const AiResponse = { role: 'OnClick', content: response.data.message };
+    setMessages((prev) => [...prev, AiResponse]);
+    await UpdateMessages({
+      messages: [...messagesArr, AiResponse],
+      workspaceId: id,
+    });
     setLoading(false);
     isLoading.current = false;
   };
 
-  const onGenerate = (input) => {
+  const onGenerate = async (input) => {
     if (!input.trim()) return;
 
     const newMessages = [...messages, { role: 'user', content: input }];
 
     setMessages(newMessages);
-    handleAiResponse(newMessages);
+    await UpdateMessages({
+      messages: newMessages,
+      workspaceId: id,
+    });
 
     setUserInput('');
+    handleAiResponse(newMessages);
   };
 
   return (
     <div className="max-w-3xl mx-auto p-4 flex flex-col h-auto md:h-[90vh]">
       {/* Messages container - scrollable */}
-      <div className="flex-1 overflow-y-auto space-y-4">
+      <div className="flex-1 overflow-y-auto space-y-4 scrollbar-hide">
         {Array.isArray(messages) &&
           messages.map((msg, i) => (
             <div
@@ -97,7 +105,7 @@ const ChatView = () => {
                   : 'OneClick'}
                 :
               </strong>
-              <p>{msg.content}</p>
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
             </div>
           ))}
         {loading && (
