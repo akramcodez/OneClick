@@ -1,24 +1,27 @@
-import { GoogleGenAI } from '@google/genai';
-
-// Log to verify it's coming through
-console.log('⚙️ GEMINI_API_KEY:', process.env.NEXT_PUBLIC_GEMINI_API_URL);
-
-const genAI = new GoogleGenAI({
-  apiKey: process.env.NEXT_PUBLIC_GEMINI_API_URL, // ← server-only env var
-});
-
 export async function generateResponse(prompt) {
-  console.log('🧠 Prompt received:', prompt);
   try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash', // or 'gemini-2.0-flash-exp' if you have access
-    });
-    const result = await model.generateContent(prompt);
-    const text = await result.response.text();
-    console.log('🤖 raw response:', text);
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_URL}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      },
+    );
+
+    const payload = await res.json();
+    console.log('🧪 raw fetch status:', res.status, 'body:', payload);
+
+    if (!res.ok) {
+      throw new Error(payload.error?.message || 'Failed to fetch response');
+    }
+
+    const text = payload.candidates?.[0]?.content?.parts?.[0]?.text;
     return text;
-  } catch (error) {
-    console.error('❌ Error in generateResponse:', error);
-    throw error;
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 }
