@@ -7,13 +7,15 @@ import { UserDetailContext } from '@/context/user.detail.context';
 const Header = () => {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   return (
-    <div className="p-4 flex justify-between items-center">
-      <Image src={'/logo.webp'} alt="Logo" width={40} height={40} />
+    <div className="sticky top-0 bg-black p-4 flex justify-between items-center">
+      <Image src={'/logo.webp'} alt="Logo" width={30} height={30} />
       {!userDetail?.name && (
         <div className="flex gap-5">
-          <Button variant="ghost">Sign In</Button>
+          <Button variant="ghost" className="h-[30px]">
+            Sign In
+          </Button>
           <Button
-            className="text-white"
+            className="text-white h-[30px]"
             style={{
               backgroundColor: Colors.BLUE,
             }}

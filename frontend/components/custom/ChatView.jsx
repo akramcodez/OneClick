@@ -30,11 +30,15 @@ const ChatView = () => {
     }
   }, [result, setMessages]);
 
-  useEffect(() => {
-    if (!Array.isArray(messages)) return;
+  const messagesRef = useRef(messages);
 
-    const last = messages.at(-1);
-    const secondLast = messages.at(-2);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    const last = messagesRef.current[messagesRef.current.length - 1];
+    const secondLast = messagesRef.current[messagesRef.current.length - 2];
 
     if (
       last?.role === 'user' &&
@@ -42,7 +46,7 @@ const ChatView = () => {
       !isLoading.current
     ) {
       isLoading.current = true;
-      handleAiResponse(messages).finally(() => {
+      handleAiResponse(messagesRef.current).finally(() => {
         isLoading.current = false;
       });
     }
@@ -51,17 +55,25 @@ const ChatView = () => {
   const handleAiResponse = async (messagesArr) => {
     const prompt = JSON.stringify(messagesArr) + Prompt.CHAT_PROMPT;
     setLoading(true);
-    const response = await axios.post('/api/ai-cha', { prompt });
+    isLoading.current = true;
+
+    const response = await axios.post('/api/ai-chat', { prompt });
     setMessages([
       ...messagesArr,
       { role: 'assistant', content: response.data.message },
     ]);
     setLoading(false);
+    isLoading.current = false;
   };
 
   const onGenerate = (input) => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: 'user', content: input }]);
+
+    const newMessages = [...messages, { role: 'user', content: input }];
+
+    setMessages(newMessages);
+    handleAiResponse(newMessages);
+
     setUserInput('');
   };
 

@@ -5,13 +5,29 @@ import CodeView from '@/components/custom/CodeView';
 export default function Workspace() {
   return (
     <div className="h-screen p-0 m-0 overflow-hidden flex flex-col md:flex-row">
-      {/* ChatView - full width on small, 30% on md, 40% on lg */}
-      <div className="flex-shrink-0 w-full h-1/2 md:h-full md:w-[30%] lg:w-[40%] overflow-hidden">
+      {/* ChatView */}
+      <div
+        className="
+          flex-shrink-0 
+          w-full h-1/2 
+          md:h-full md:w-[30%] 
+          lg:w-[40%] 
+          overflow-auto
+        "
+      >
         <ChatView />
       </div>
 
-      {/* CodeView - full width on small, 70% on md, 60% on lg */}
-      <div className="flex-grow w-full h-1/2 md:h-full md:w-[70%] lg:w-[60%] overflow-hidden">
+      {/* CodeView */}
+      <div
+        className="
+          flex-grow 
+          w-full h-1/2 
+          md:h-[90%] md:w-[70%] 
+          lg:w-[60%] 
+          overflow-auto
+        "
+      >
         <CodeView />
       </div>
     </div>
