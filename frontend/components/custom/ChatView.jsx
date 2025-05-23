@@ -59,7 +59,7 @@ const ChatView = () => {
     setLoading(true);
     isLoading.current = true;
 
-    const response = await axios.post('/api/ai-cha', { prompt });
+    const response = await axios.post('/api/ai-chat', { prompt });
     const AiResponse = { role: 'OnClick', content: response.data.message };
     setMessages((prev) => [...prev, AiResponse]);
     await UpdateMessages({

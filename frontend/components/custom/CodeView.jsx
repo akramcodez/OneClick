@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SandpackProvider,
   SandpackLayout,
@@ -9,11 +9,35 @@ import {
   SandpackFileExplorer,
 } from '@codesandbox/sandpack-react';
 import Lookup from '@/data/Lookup';
+import { MessagesContext } from '@/context/messages.context';
+import axios from 'axios';
+import { useContext } from 'react';
+import Prompt from '@/data/Prompt';
 
 const CodeView = () => {
   const [activeTab, setActiveTab] = useState('code');
   const [files, setFiles] = useState(Lookup.DEFAULT_FILE);
-  console.log('files', files);
+  const { messages, setMessages } = useContext(MessagesContext);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'user') {
+        generateCode(lastMessage.content);
+      }
+    }
+  }, [messages]);
+
+  const generateCode = async (prompt) => {
+    const PROMPT = `${prompt} ${Prompt.CODE_GEN_PROMPT}`;
+    const response = await axios.post('/api/gen-ai-code', { prompt: PROMPT });
+
+    const code = response.data;
+    const mergeFiles = { ...Lookup.DEFAULT_FILE, ...code?.files };
+    setFiles(mergeFiles);
+
+    console.log('Generated code:', code);
+  };
 
   return (
     <div className="p-4">
@@ -52,9 +76,12 @@ const CodeView = () => {
           dependencies: {
             ...Lookup.DEPENDANCY,
           },
-          files: {
-            ...files,
-          },
+        }}
+        files={files}
+        options={{
+          externalResources: [
+            'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4',
+          ],
         }}
       >
         <SandpackLayout>
