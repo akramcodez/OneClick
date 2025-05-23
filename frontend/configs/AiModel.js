@@ -50,7 +50,6 @@ async function generateContent(prompt, configType = 'default') {
       throw new Error('No text content found in response');
     }
 
-    // Parse JSON if responseMimeType is 'application/json'
     return text;
   } catch (err) {
     console.error(`Error generating content (${configType}):`, err);

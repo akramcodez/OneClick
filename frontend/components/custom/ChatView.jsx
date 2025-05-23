@@ -21,7 +21,6 @@ const ChatView = () => {
   const [loading, setLoading] = useState(false);
   const UpdateMessages = useMutation(api.workspace.UpdateMessages);
 
-  // Fetch workspace messages
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
 
   useEffect(() => {

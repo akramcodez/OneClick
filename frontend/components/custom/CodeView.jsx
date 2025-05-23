@@ -13,11 +13,27 @@ import { MessagesContext } from '@/context/messages.context';
 import axios from 'axios';
 import { useContext } from 'react';
 import Prompt from '@/data/Prompt';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useParams } from 'next/navigation';
+import { useQuery } from 'convex/react';
 
 const CodeView = () => {
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState('code');
   const [files, setFiles] = useState(Lookup.DEFAULT_FILE);
   const { messages, setMessages } = useContext(MessagesContext);
+  const UpdateFiles = useMutation(api.workspace.UpdateFiles);
+
+  const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
+
+  useEffect(() => {
+    if (id && result && result.fileData) {
+      const merged = { ...Lookup.DEFAULT_FILE, ...result.fileData };
+      setFiles(merged);
+      console.log('Files updated from query:', merged);
+    }
+  }, [id, result]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -25,17 +41,22 @@ const CodeView = () => {
       if (lastMessage.role === 'user') {
         generateCode(lastMessage.content);
       }
+      console.log('Messages:', messages);
     }
   }, [messages]);
 
   const generateCode = async (prompt) => {
     const PROMPT = `${prompt} ${Prompt.CODE_GEN_PROMPT}`;
     const response = await axios.post('/api/gen-ai-code', { prompt: PROMPT });
-
     const code = response.data;
+
     const mergeFiles = { ...Lookup.DEFAULT_FILE, ...code?.files };
     setFiles(mergeFiles);
 
+    await UpdateFiles({
+      workspaceId: id,
+      files: code?.files,
+    });
     console.log('Generated code:', code);
   };
 
