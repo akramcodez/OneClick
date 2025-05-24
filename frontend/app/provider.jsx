@@ -7,12 +7,16 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserDetailContext } from '@/context/user.detail.context';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/convex/_generated/api';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSideBar } from '@/components/custom/AppSideBar';
+import { SidebarStateContext } from '@/context/sidebarState.context';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
 function Provider({ children }) {
   const [messages, setMessages] = useState([]);
   const [userDetail, setUserDetail] = useState(null);
+  const [sidebarState, setSidebarState] = useState(false);
 
   useEffect(() => {
     IsAuthenticated();
@@ -41,15 +45,20 @@ function Provider({ children }) {
       >
         <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
           <MessagesContext.Provider value={{ messages, setMessages }}>
-            <NextThemesProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Header />
-              {children}
-            </NextThemesProvider>
+            <SidebarStateContext value={{ sidebarState, setSidebarState }}>
+              <NextThemesProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Header />
+                {children}
+                <SidebarProvider defaultOpen={false} open={sidebarState}>
+                  <AppSideBar />
+                </SidebarProvider>
+              </NextThemesProvider>
+            </SidebarStateContext>
           </MessagesContext.Provider>
         </UserDetailContext.Provider>
       </GoogleOAuthProvider>

@@ -51,3 +51,16 @@ export const UpdateFiles = mutation({
     return result;
   },
 });
+
+export const GetAllWorkspaces = query({
+  args: {
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const allWorkspaces = await ctx.db
+      .query('workspace')
+      .filter((q) => q.eq(q.field('user'), args.userId))
+      .collect();
+    return allWorkspaces;
+  },
+});

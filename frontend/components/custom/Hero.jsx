@@ -8,6 +8,8 @@ import LoginPage from './LoginPage';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useRouter } from 'next/navigation';
+import { Menu } from 'lucide-react';
+import { SidebarStateContext } from '@/context/sidebarState.context';
 
 const Hero = () => {
   const [userInput, setUserInput] = useState();
@@ -16,6 +18,7 @@ const Hero = () => {
   const [openDailog, setOpenDailog] = useState(false);
   const CreateWorkspace = useMutation(api.workspace.CreateWorkspace);
   const router = useRouter();
+  const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
 
   const onGenerate = async (input) => {
     if (!userDetail?.name) {
@@ -39,6 +42,20 @@ const Hero = () => {
 
   return (
     <div className="flex flex-col items-center mt-36 gap-2">
+      {userDetail && !sidebarState && (
+        <div className="group w-fit">
+          <Menu
+            onClick={() => setSidebarState(!sidebarState)}
+            className="rounded-full absolute top-18 left-4 w-7 h-7 cursor-pointer opacity-60 z-200"
+          />
+          <div
+            className="absolute top-19 left-13 opacity-0 group-hover:opacity-60 z-200
+                     bg-black text-white text-xs rounded-md py-1 px-3"
+          >
+            Open Sidebar
+          </div>
+        </div>
+      )}
       <h2 className="font-bold text-4xl">{Lookup.HERO_HEADING}</h2>
       <p className="text-gray-400 font-medium">{Lookup.HERO_DESC}</p>
       <div className="relative max-w-xl w-full mt-3 rounded-xl p-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-gradient-border">
