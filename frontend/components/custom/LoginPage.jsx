@@ -18,7 +18,7 @@ import { api } from '@/convex/_generated/api';
 
 const LoginPage = ({ openDailog, closeDailog }) => {
   const { setUserDetail } = useContext(UserDetailContext);
-  const createUser = useMutation(api.users.CreateUser);
+  const createOrGetUser = useMutation(api.users.CreateOrGetUser);
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -32,7 +32,7 @@ const LoginPage = ({ openDailog, closeDailog }) => {
 
         const user = userInfo.data;
 
-        await createUser({
+        const dbUser = await createOrGetUser({
           name: user.name,
           email: user.email,
           picture: user.picture,
@@ -40,10 +40,11 @@ const LoginPage = ({ openDailog, closeDailog }) => {
         });
 
         if (typeof window !== 'undefined') {
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('user', JSON.stringify(dbUser));
         }
 
-        setUserDetail(user);
+        setUserDetail(dbUser);
+
         closeDailog(false);
       } catch (err) {
         console.error('Google login error:', err);

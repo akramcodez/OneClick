@@ -21,7 +21,7 @@ const Hero = () => {
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
 
   const onGenerate = async (input) => {
-    if (!userDetail?.name) {
+    if (!userDetail || !userDetail._id) {
       setOpenDailog(true);
       return;
     }
@@ -33,29 +33,38 @@ const Hero = () => {
 
     setMessages(msg);
 
-    const workspaceId = await CreateWorkspace({
-      user: userDetail?._id,
-      message: [msg],
-    });
-    router.push(`/workspace/${workspaceId}`);
+    try {
+      const workspaceId = await CreateWorkspace({
+        user: userDetail._id,
+        message: [msg],
+      });
+      router.push(`/workspace/${workspaceId}`);
+    } catch (err) {
+      console.error('Failed to create workspace:', err);
+    }
   };
 
   return (
     <div className="flex flex-col items-center mt-36 gap-2">
-      {userDetail && !sidebarState && (
-        <div className="group w-fit">
+      {userDetail && (
+        <div
+          className={`group w-fit transition-opacity duration-300 ${
+            sidebarState ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
           <Menu
-            onClick={() => setSidebarState(!sidebarState)}
+            onClick={() => setSidebarState(true)}
             className="rounded-full absolute top-18 left-4 w-7 h-7 cursor-pointer opacity-60 z-200"
           />
           <div
-            className="absolute top-19 left-13 opacity-0 group-hover:opacity-60 z-200
-                     bg-black text-white text-xs rounded-md py-1 px-3"
+            className="absolute top-19 left-12 opacity-0 group-hover:opacity-50 z-200
+                 bg-gray-800 text-white text-xs rounded-md py-1 px-3"
           >
             Open Sidebar
           </div>
         </div>
       )}
+
       <h2 className="font-bold text-4xl">{Lookup.HERO_HEADING}</h2>
       <p className="text-gray-400 font-medium">{Lookup.HERO_DESC}</p>
       <div className="relative max-w-xl w-full mt-3 rounded-xl p-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-gradient-border">

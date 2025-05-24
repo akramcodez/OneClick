@@ -89,15 +89,19 @@ const ChatView = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 flex flex-col h-auto md:h-[90vh]">
-      {userDetail && !sidebarState && (
-        <div className="group w-fit">
+      {userDetail && (
+        <div
+          className={`group w-fit transition-opacity duration-300 ${
+            sidebarState ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
           <Menu
-            onClick={() => setSidebarState(!sidebarState)}
+            onClick={() => setSidebarState(true)}
             className="rounded-full absolute top-18 left-4 w-7 h-7 cursor-pointer opacity-60 z-200"
           />
           <div
-            className="absolute top-19 left-13 opacity-0 group-hover:opacity-60 z-200
-                           bg-black text-white text-xs rounded-md py-1 px-3"
+            className="absolute top-19 left-12 opacity-0 group-hover:opacity-50 z-200
+                       bg-gray-800 text-white text-xs rounded-md py-1 px-3"
           >
             Open Sidebar
           </div>
