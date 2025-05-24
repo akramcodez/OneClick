@@ -14,6 +14,13 @@ import ReactMarkdown from 'react-markdown';
 import { Menu } from 'lucide-react';
 import { SidebarStateContext } from '@/context/sidebarState.context';
 
+export const countToken = (inputText) => {
+  return inputText
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word).length;
+};
+
 const ChatView = () => {
   const { id } = useParams();
   const { messages, setMessages } = useContext(MessagesContext);
@@ -23,6 +30,7 @@ const ChatView = () => {
   const [loading, setLoading] = useState(false);
   const UpdateMessages = useMutation(api.workspace.UpdateMessages);
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
+  const updateToken = useMutation(api.users.UpdateToken);
 
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
 
@@ -64,6 +72,16 @@ const ChatView = () => {
     const response = await axios.post('/api/ai-chat', { prompt });
     const AiResponse = { role: 'OnClick', content: response.data.message };
     setMessages((prev) => [...prev, AiResponse]);
+
+    const currentToken = Number(userDetail?.token) || 0;
+    const cost = Number(countToken(JSON.stringify(AiResponse)));
+    const newTokenBalance = currentToken - cost;
+
+    await updateToken({
+      userId: userDetail._id,
+      token: newTokenBalance,
+    });
+
     await UpdateMessages({
       messages: [...messagesArr, AiResponse],
       workspaceId: id,
@@ -101,7 +119,7 @@ const ChatView = () => {
           />
           <div
             className="absolute top-19 left-12 opacity-0 group-hover:opacity-50 z-200
-                       bg-gray-800 text-white text-xs rounded-md py-1 px-3"
+                       bg-black text-white text-xs rounded-md py-1 px-3"
           >
             Open Sidebar
           </div>

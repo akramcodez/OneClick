@@ -31,7 +31,11 @@ export function AppSideBar() {
         />
       </SidebarHeader>
       <SidebarHeader>
-        <Link href="/" className="cursor-pointer w-full px-4">
+        <Link
+          href="/"
+          onClick={() => setSidebarState(!sidebarState)}
+          className="cursor-pointer w-full px-4"
+        >
           <Button className="bg-gray-400 w-full">
             <MessageCircleCode /> Start New Chat
           </Button>

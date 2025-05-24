@@ -71,3 +71,16 @@ export const CreateOrGetUser = mutation({
     };
   },
 });
+
+export const UpdateToken = mutation({
+  args: {
+    token: v.number(),
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const result = await ctx.db.patch(args.userId, {
+      token: args.token,
+    });
+    return result;
+  },
+});

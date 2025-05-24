@@ -18,6 +18,8 @@ import { api } from '@/convex/_generated/api';
 import { useParams } from 'next/navigation';
 import { useQuery } from 'convex/react';
 import { Loader2Icon } from 'lucide-react';
+import { countToken } from './ChatView';
+import { UserDetailContext } from '@/context/user.detail.context';
 
 const CodeView = () => {
   const { id } = useParams();
@@ -25,6 +27,8 @@ const CodeView = () => {
   const [files, setFiles] = useState(Lookup.DEFAULT_FILE);
   const { messages, setMessages } = useContext(MessagesContext);
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
+  const { userDetail } = useContext(UserDetailContext);
+  const updateToken = useMutation(api.users.UpdateToken);
 
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
   const [loadingGeneration, setLoadingGeneration] = useState(false);
@@ -61,6 +65,17 @@ const CodeView = () => {
 
     const mergeFiles = { ...Lookup.DEFAULT_FILE, ...code?.files };
     setFiles(mergeFiles);
+
+    console.log(code);
+
+    const currentToken = Number(userDetail?.token) || 0;
+    const cost = Number(countToken(JSON.stringify(code)));
+    const newTokenBalance = currentToken - cost;
+
+    await updateToken({
+      userId: userDetail._id,
+      token: newTokenBalance,
+    });
 
     await UpdateFiles({
       workspaceId: id,
