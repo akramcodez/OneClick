@@ -17,6 +17,7 @@ import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useParams } from 'next/navigation';
 import { useQuery } from 'convex/react';
+import { Loader2Icon } from 'lucide-react';
 
 const CodeView = () => {
   const { id } = useParams();
@@ -25,15 +26,22 @@ const CodeView = () => {
   const { messages, setMessages } = useContext(MessagesContext);
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
 
+  const [loadingWorkspace, setLoadingWorkspace] = useState(true);
+  const [loadingGeneration, setLoadingGeneration] = useState(false);
+
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
 
   useEffect(() => {
-    if (id && result && result.fileData) {
-      const merged = { ...Lookup.DEFAULT_FILE, ...result.fileData };
-      setFiles(merged);
-      console.log('Files updated from query:', merged);
+    if (!result) {
+      setLoadingWorkspace(true);
+    } else {
+      setLoadingWorkspace(false);
+      if (result.fileData) {
+        const merged = { ...Lookup.DEFAULT_FILE, ...result.fileData };
+        setFiles(merged);
+      }
     }
-  }, [id, result]);
+  }, [result]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -46,6 +54,7 @@ const CodeView = () => {
   }, [messages]);
 
   const generateCode = async (prompt) => {
+    setLoadingGeneration(true);
     const PROMPT = `${prompt} ${Prompt.CODE_GEN_PROMPT}`;
     const response = await axios.post('/api/gen-ai-code', { prompt: PROMPT });
     const code = response.data;
@@ -57,7 +66,7 @@ const CodeView = () => {
       workspaceId: id,
       files: code?.files,
     });
-    console.log('Generated code:', code);
+    setLoadingGeneration(false);
   };
 
   return (
@@ -106,6 +115,16 @@ const CodeView = () => {
         }}
       >
         <SandpackLayout>
+          {(loadingWorkspace || loadingGeneration) && (
+            <div className="p-10 bg-gray-900 opacity-80 absolute top-0 left-0 rounded-lg w-full h-full flex flex-col items-center justify-center z-50">
+              <Loader2Icon className="animate-spin h-10 w-10 text-white" />
+              <h2 className="text-white mt-4">
+                {loadingGeneration
+                  ? 'Generating files...'
+                  : 'Loading workspace...'}
+              </h2>
+            </div>
+          )}
           {activeTab === 'code' ? (
             <>
               <SandpackFileExplorer style={{ height: '78vh' }} />
