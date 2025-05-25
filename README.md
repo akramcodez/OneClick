@@ -94,8 +94,6 @@ Deployed on [Vercel](https://vercel.com):
 * [x] AI prompt & response
 * [x] Code editor integration
 * [x] Markdown rendering
-* [ ] Real-time collaboration
-* [ ] GitHub login (optional)
 
 ---
 
