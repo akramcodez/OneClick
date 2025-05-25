@@ -23,7 +23,7 @@ export function AppSideBar() {
     <Sidebar>
       <SidebarHeader className="p-5 flex flex-row justify-between">
         <Link href="/" className="cursor-pointer">
-          <Image src={'/logo.webp'} alt="Logo" width={30} height={30} />
+          <Image src={'/OneClick.png'} alt="Logo" width={38} height={38} />
         </Link>
         <CircleArrowLeft
           onClick={() => setSidebarState(!sidebarState)}
@@ -40,6 +40,7 @@ export function AppSideBar() {
             <MessageCircleCode /> Start New Chat
           </Button>
         </Link>
+        <div className="py-1"></div>
       </SidebarHeader>
       <SidebarContent className="p-5">
         <SidebarGroup>

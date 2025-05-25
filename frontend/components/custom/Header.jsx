@@ -15,7 +15,7 @@ const Header = () => {
     <div className="sticky top-0 bg-black p-4 flex justify-between items-center">
       <a href="/">
         {' '}
-        <Image src={'/logo.webp'} alt="Logo" width={30} height={30} />
+        <Image src={'/OneClick.png'} alt="Logo" width={30} height={30} />
       </a>
       <div className="flex gap-3">
         {!userDetail?.name && (

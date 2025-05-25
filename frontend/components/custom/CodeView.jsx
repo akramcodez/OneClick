@@ -5,7 +5,6 @@ import {
   SandpackProvider,
   SandpackLayout,
   SandpackCodeEditor,
-  SandpackPreview,
   SandpackFileExplorer,
 } from '@codesandbox/sandpack-react';
 import Lookup from '@/data/Lookup';
@@ -20,6 +19,7 @@ import { useQuery } from 'convex/react';
 import { Loader2Icon } from 'lucide-react';
 import { countToken } from './ChatView';
 import { UserDetailContext } from '@/context/user.detail.context';
+import SandpackPreviewClient from './SandpackPreviewClient';
 
 const CodeView = () => {
   const { id } = useParams();
@@ -155,10 +155,7 @@ const CodeView = () => {
               </div>
             </div>
           ) : (
-            <SandpackPreview
-              style={{ height: '78vh', width: '100%' }}
-              showNavigator={true}
-            />
+            <SandpackPreviewClient />
           )}
         </SandpackLayout>
       </SandpackProvider>
