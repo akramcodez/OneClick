@@ -27,7 +27,7 @@ const CodeView = () => {
   const [files, setFiles] = useState(Lookup.DEFAULT_FILE);
   const { messages, setMessages } = useContext(MessagesContext);
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
-  const { userDetail } = useContext(UserDetailContext);
+  const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const updateToken = useMutation(api.users.UpdateToken);
 
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
@@ -71,6 +71,11 @@ const CodeView = () => {
     const currentToken = Number(userDetail?.token) || 0;
     const cost = Number(countToken(JSON.stringify(code)));
     const newTokenBalance = currentToken - cost;
+
+    setUserDetail((prev) => ({
+      ...prev,
+      token: token,
+    }));
 
     await updateToken({
       userId: userDetail._id,
@@ -141,10 +146,14 @@ const CodeView = () => {
             </div>
           )}
           {activeTab === 'code' ? (
-            <>
-              <SandpackFileExplorer style={{ height: '78vh' }} />
-              <SandpackCodeEditor style={{ height: '78vh', flex: 1 }} />
-            </>
+            <div className="flex flex-col md:flex-row w-full">
+              <div className="w-full md:w-1/3" style={{ height: '78vh' }}>
+                <SandpackFileExplorer style={{ height: '100%' }} />
+              </div>
+              <div className="w-full md:w-2/3" style={{ height: '78vh' }}>
+                <SandpackCodeEditor style={{ height: '100%', width: '100%' }} />
+              </div>
+            </div>
           ) : (
             <SandpackPreview
               style={{ height: '78vh', width: '100%' }}

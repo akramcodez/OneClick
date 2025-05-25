@@ -13,6 +13,7 @@ import { UserDetailContext } from '@/context/user.detail.context';
 import ReactMarkdown from 'react-markdown';
 import { Menu } from 'lucide-react';
 import { SidebarStateContext } from '@/context/sidebarState.context';
+import { toast } from 'sonner';
 
 export const countToken = (inputText) => {
   return inputText
@@ -26,13 +27,31 @@ const ChatView = () => {
   const { messages, setMessages } = useContext(MessagesContext);
   const [userInput, setUserInput] = useState('');
   const isLoading = useRef(false);
-  const { userDetail } = useContext(UserDetailContext);
+  const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [loading, setLoading] = useState(false);
   const UpdateMessages = useMutation(api.workspace.UpdateMessages);
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
   const updateToken = useMutation(api.users.UpdateToken);
 
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkScreenSize = () => {
+        if (window.innerWidth < 768) {
+          setSidebarState(true);
+        }
+      };
+
+      checkScreenSize();
+
+      window.addEventListener('resize', checkScreenSize);
+
+      return () => {
+        window.removeEventListener('resize', checkScreenSize);
+      };
+    }
+  }, [setSidebarState]);
 
   useEffect(() => {
     if (result && Array.isArray(result.message)) {
@@ -77,6 +96,11 @@ const ChatView = () => {
     const cost = Number(countToken(JSON.stringify(AiResponse)));
     const newTokenBalance = currentToken - cost;
 
+    setUserDetail((prev) => ({
+      ...prev,
+      token: token,
+    }));
+
     await updateToken({
       userId: userDetail._id,
       token: newTokenBalance,
@@ -92,6 +116,11 @@ const ChatView = () => {
 
   const onGenerate = async (input) => {
     if (!input.trim()) return;
+
+    if (userDetail?.token < 10) {
+      toast('You dont have enough token!');
+      return;
+    }
 
     const newMessages = [...messages, { role: 'user', content: input }];
 

@@ -15,7 +15,7 @@ export default {
   SIGNIN_SUBHEADING:
     'To use OneClick you must LogIn or create one account else leave it',
   SIGNIn_AGREEMENT_TEXT:
-    'By using Bolt, you agree to the collection of usage data for analytics.',
+    'By using OneClick, you agree to the collection of usage data for analytics.',
 
   DEFAULT_FILE: {
     '/public/index.html': {
@@ -92,21 +92,21 @@ export default config;
       name: 'Starter',
       tokens: '120K',
       value: 120000,
-      desc: 'Designed for professionals who need to use Bolt a few times per week.',
+      desc: 'Designed for professionals who need to use OneClick a few times per week.',
       price: 9.99,
     },
     {
       name: 'Pro',
       tokens: '2.5M',
       value: 2500000,
-      desc: 'Designed for professionals who need to use Bolt a few times per week.',
+      desc: 'Designed for professionals who need to use OneClick a few times per week.',
       price: 19.99,
     },
     {
       name: 'Unlimted (License)',
       tokens: 'Unmited',
       value: 999999999,
-      desc: 'Designed for professionals who need to use Bolt a few times per week.',
+      desc: 'Designed for professionals who need to use OneClick a few times per week.',
       price: 49.99,
     },
   ],

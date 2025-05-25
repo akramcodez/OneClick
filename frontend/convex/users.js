@@ -20,7 +20,7 @@ export const CreateUser = mutation({
         email: args.email,
         picture: args.picture,
         uid: args.uid,
-        token: 50000,
+        token: 30000,
       });
     }
   },
@@ -61,13 +61,13 @@ export const CreateOrGetUser = mutation({
       email: args.email,
       picture: args.picture,
       uid: args.uid,
-      token: 50000,
+      token: 30000,
     });
 
     return {
       _id: id,
       ...args,
-      token: 50000,
+      token: 30000,
     };
   },
 });

@@ -10,6 +10,7 @@ import { api } from '@/convex/_generated/api';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSideBar } from '@/components/custom/AppSideBar';
 import { SidebarStateContext } from '@/context/sidebarState.context';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -43,24 +44,28 @@ function Provider({ children }) {
       <GoogleOAuthProvider
         clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}
       >
-        <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
-          <MessagesContext.Provider value={{ messages, setMessages }}>
-            <SidebarStateContext value={{ sidebarState, setSidebarState }}>
-              <NextThemesProvider
-                attribute="class"
-                defaultTheme="dark"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <Header />
-                {children}
-                <SidebarProvider defaultOpen={false} open={sidebarState}>
-                  <AppSideBar />
-                </SidebarProvider>
-              </NextThemesProvider>
-            </SidebarStateContext>
-          </MessagesContext.Provider>
-        </UserDetailContext.Provider>
+        <PayPalScriptProvider
+          options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID }}
+        >
+          <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+            <MessagesContext.Provider value={{ messages, setMessages }}>
+              <SidebarStateContext value={{ sidebarState, setSidebarState }}>
+                <NextThemesProvider
+                  attribute="class"
+                  defaultTheme="dark"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <Header />
+                  {children}
+                  <SidebarProvider defaultOpen={false} open={sidebarState}>
+                    <AppSideBar />
+                  </SidebarProvider>
+                </NextThemesProvider>
+              </SidebarStateContext>
+            </MessagesContext.Provider>
+          </UserDetailContext.Provider>
+        </PayPalScriptProvider>
       </GoogleOAuthProvider>
     </div>
   );

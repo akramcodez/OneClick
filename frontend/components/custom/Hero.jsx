@@ -1,7 +1,7 @@
 'use client';
 import Lookup from '@/data/Lookup';
 import { ArrowRight, Link } from 'lucide-react';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { MessagesContext } from '@/context/messages.context';
 import { UserDetailContext } from '@/context/user.detail.context';
 import LoginPage from './LoginPage';
@@ -10,6 +10,7 @@ import { api } from '@/convex/_generated/api';
 import { useRouter } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import { SidebarStateContext } from '@/context/sidebarState.context';
+import { toast } from 'sonner';
 
 const Hero = () => {
   const [userInput, setUserInput] = useState();
@@ -20,12 +21,33 @@ const Hero = () => {
   const router = useRouter();
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkScreenSize = () => {
+        if (window.innerWidth < 768) {
+          setSidebarState(true);
+        }
+      };
+
+      checkScreenSize();
+
+      window.addEventListener('resize', checkScreenSize);
+
+      return () => {
+        window.removeEventListener('resize', checkScreenSize);
+      };
+    }
+  }, [setSidebarState]);
+
   const onGenerate = async (input) => {
     if (!userDetail || !userDetail._id) {
       setOpenDailog(true);
       return;
     }
-
+    if (userDetail?.token < 10) {
+      toast('You dont have enough token!');
+      return;
+    }
     const msg = {
       role: 'user',
       content: input,
@@ -93,7 +115,6 @@ const Hero = () => {
           <h2
             onClick={() => {
               onGenerate(suggestions);
-              setUserInput(suggestions);
             }}
             className="p-1 px-2 border rounded-full bg-[#141414] cursor-pointer text-xs text-gray-400 hover:bg-gray-500 hover:text-black font-bold"
             key={index}
