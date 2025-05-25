@@ -1,3 +1,4 @@
+'use client';
 import { HelpCircle, LogOut, Settings, Wallet } from 'lucide-react';
 import React, { useContext } from 'react';
 import { Button } from '../ui/button';
@@ -9,15 +10,15 @@ import { UserDetailContext } from '@/context/user.detail.context';
 
 const SideBarFooter = () => {
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
-  const { signout, setSignout } = useContext(SignoutContext);
-  const { userDetail, setUserDetail } = useContext(UserDetailContext);
-
+  const { setSignout } = useContext(SignoutContext);
+  const { setUserDetail } = useContext(UserDetailContext);
   const router = useRouter();
+
   const options = [
     {
       name: 'Settings',
       icon: Settings,
-      path: '/',
+      path: null, // Will show toast
     },
     {
       name: 'Help',
@@ -32,7 +33,7 @@ const SideBarFooter = () => {
     {
       name: 'Sign Out',
       icon: LogOut,
-      path: '/',
+      path: '/', // After logout, redirect to home
     },
   ];
 
@@ -41,26 +42,15 @@ const SideBarFooter = () => {
       localStorage.removeItem('user');
       setUserDetail(null);
       setSignout(false);
-      toast('Log out successfully');
+      toast.success('Logged out successfully');
       router.push('/');
     } else if (option.name === 'Settings') {
-      toast('Settings not available');
-    } else {
+      toast.warning('Settings not available yet');
+    } else if (option.path) {
       router.push(option.path);
     }
 
-    setSidebarState(!sidebarState);
-  };
-
-  const checks = (option) => {
-    if (option.name === 'Settings') {
-      toast('Settings not available');
-    }
-    if (option.name === 'Sign Out' && userDetail && signout) {
-      setUserDetail(null);
-      setSignout(false);
-      toast('Log out successfully');
-    }
+    setSidebarState(false);
   };
 
   return (
@@ -69,10 +59,10 @@ const SideBarFooter = () => {
         <Button
           onClick={() => handleClick(option)}
           variant="ghost"
-          className="w-full m-0.5 flex justify-start"
+          className="w-full m-0.5 flex justify-start gap-2"
           key={index}
         >
-          <option.icon />
+          <option.icon className="mr-2 h-5 w-5" />
           {option.name}
         </Button>
       ))}
