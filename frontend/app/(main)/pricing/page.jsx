@@ -4,13 +4,31 @@ import PricingModel from '@/components/custom/PricingModel';
 import { UserDetailContext } from '@/context/user.detail.context';
 import Colors from '@/data/Colors';
 import Lookup from '@/data/Lookup';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { SidebarStateContext } from '@/context/sidebarState.context';
 import { Menu } from 'lucide-react';
 
 const PricingPage = () => {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const { sidebarState, setSidebarState } = useContext(SidebarStateContext);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkScreenSize = () => {
+        if (window.innerWidth < 768) {
+          setSidebarState(true);
+        }
+      };
+
+      checkScreenSize();
+
+      window.addEventListener('resize', checkScreenSize);
+
+      return () => {
+        window.removeEventListener('resize', checkScreenSize);
+      };
+    }
+  }, [setSidebarState]);
 
   return (
     <div className="mt-5 flex flex-col items-center justify-center p-10 md:px-30 lg:px-40 overflow-auto">

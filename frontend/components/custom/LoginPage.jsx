@@ -15,9 +15,11 @@ import { UserDetailContext } from '@/context/user.detail.context';
 import { v4 as uuid4 } from 'uuid';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { SignoutContext } from '@/context/SignoutContext';
 
 const LoginPage = ({ openDailog, closeDailog }) => {
   const { setUserDetail } = useContext(UserDetailContext);
+  const { signout, setSignout } = useContext(SignoutContext);
   const createOrGetUser = useMutation(api.users.CreateOrGetUser);
 
   const googleLogin = useGoogleLogin({
@@ -44,6 +46,7 @@ const LoginPage = ({ openDailog, closeDailog }) => {
         }
 
         setUserDetail(dbUser);
+        setSignout(true);
 
         closeDailog(false);
       } catch (err) {

@@ -13,6 +13,7 @@ import { SidebarStateContext } from '@/context/sidebarState.context';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { ActionContext } from '@/context/ActionContext';
 import { useRouter } from 'next/navigation';
+import { SignoutContext } from '@/context/SignoutContext';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -21,6 +22,7 @@ function Provider({ children }) {
   const [userDetail, setUserDetail] = useState(null);
   const [sidebarState, setSidebarState] = useState(false);
   const [action, setAction] = useState();
+  const [signout, setSignout] = useState(false);
 
   const router = useRouter();
 
@@ -59,18 +61,20 @@ function Provider({ children }) {
                 value={{ sidebarState, setSidebarState }}
               >
                 <ActionContext.Provider value={{ action, setAction }}>
-                  <NextThemesProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                  >
-                    <Header />
-                    {children}
-                    <SidebarProvider defaultOpen={false} open={sidebarState}>
-                      <AppSideBar />
-                    </SidebarProvider>
-                  </NextThemesProvider>
+                  <SignoutContext.Provider value={{ signout, setSignout }}>
+                    <NextThemesProvider
+                      attribute="class"
+                      defaultTheme="dark"
+                      enableSystem
+                      disableTransitionOnChange
+                    >
+                      <Header />
+                      {children}
+                      <SidebarProvider defaultOpen={false} open={sidebarState}>
+                        <AppSideBar />
+                      </SidebarProvider>
+                    </NextThemesProvider>
+                  </SignoutContext.Provider>
                 </ActionContext.Provider>
               </SidebarStateContext.Provider>
             </MessagesContext.Provider>
