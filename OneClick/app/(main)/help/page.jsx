@@ -72,7 +72,10 @@ const HelpPage = () => {
             <li>
               <strong>Mobile friendly:</strong> Little bit responsive for small
             </li>
-            <li>Write prompt and generate code in one click</li>
+            <li>
+              Write prompt and generate code in one click and run the code to
+              see preview
+            </li>
             <li>Remember: export and deploy only works on workspace</li>
           </ul>
           <div className="mt-6 text-sm border-t border-gray-700 pt-4">
