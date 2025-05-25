@@ -26,7 +26,7 @@ const WorkspaceHistory = () => {
               key={index}
               onClick={() => setSidebarState(!sidebarState)}
             >
-              <div className="p-2 bg-[#262525] border rounded-2xl flex items-center justify-center mt-3 hover:bg-[#424141] cursor-pointer">
+              <div className="p-2 bg-[#262525] border rounded-2xl flex items-center justify-start mt-3 hover:bg-[#424141] cursor-pointer">
                 <h2 className="text-sm text-gray-400 leading-relaxed">
                   {workspace?.message?.[0]?.content || 'No messages yet'}
                 </h2>

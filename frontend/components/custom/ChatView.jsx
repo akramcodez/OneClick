@@ -98,7 +98,7 @@ const ChatView = () => {
 
     setUserDetail((prev) => ({
       ...prev,
-      token: token,
+      token: newTokenBalance,
     }));
 
     await updateToken({

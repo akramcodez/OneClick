@@ -20,6 +20,7 @@ import { Loader2Icon } from 'lucide-react';
 import { countToken } from './ChatView';
 import { UserDetailContext } from '@/context/user.detail.context';
 import SandpackPreviewClient from './SandpackPreviewClient';
+import { ActionContext } from '@/context/ActionContext';
 
 const CodeView = () => {
   const { id } = useParams();
@@ -28,12 +29,17 @@ const CodeView = () => {
   const { messages, setMessages } = useContext(MessagesContext);
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const { action, setAction } = useContext(ActionContext);
   const updateToken = useMutation(api.users.UpdateToken);
 
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
   const [loadingGeneration, setLoadingGeneration] = useState(false);
 
   const result = useQuery(api.workspace.GetWorkspace, { workspaceId: id });
+
+  useEffect(() => {
+    setActiveTab('preview');
+  }, [action]);
 
   useEffect(() => {
     if (!result) {
@@ -74,7 +80,7 @@ const CodeView = () => {
 
     setUserDetail((prev) => ({
       ...prev,
-      token: token,
+      token: newTokenBalance,
     }));
 
     await updateToken({

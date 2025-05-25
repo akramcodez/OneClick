@@ -11,6 +11,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSideBar } from '@/components/custom/AppSideBar';
 import { SidebarStateContext } from '@/context/sidebarState.context';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { ActionContext } from '@/context/ActionContext';
+import { useRouter } from 'next/navigation';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -18,6 +20,9 @@ function Provider({ children }) {
   const [messages, setMessages] = useState([]);
   const [userDetail, setUserDetail] = useState(null);
   const [sidebarState, setSidebarState] = useState(false);
+  const [action, setAction] = useState();
+
+  const router = useRouter();
 
   useEffect(() => {
     IsAuthenticated();
@@ -28,6 +33,7 @@ function Provider({ children }) {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user?.email) {
         setUserDetail(null);
+        router.push('/');
         return;
       }
       // Use convex client to call query
@@ -49,20 +55,24 @@ function Provider({ children }) {
         >
           <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
             <MessagesContext.Provider value={{ messages, setMessages }}>
-              <SidebarStateContext value={{ sidebarState, setSidebarState }}>
-                <NextThemesProvider
-                  attribute="class"
-                  defaultTheme="dark"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <Header />
-                  {children}
-                  <SidebarProvider defaultOpen={false} open={sidebarState}>
-                    <AppSideBar />
-                  </SidebarProvider>
-                </NextThemesProvider>
-              </SidebarStateContext>
+              <SidebarStateContext.Provider
+                value={{ sidebarState, setSidebarState }}
+              >
+                <ActionContext.Provider value={{ action, setAction }}>
+                  <NextThemesProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    <Header />
+                    {children}
+                    <SidebarProvider defaultOpen={false} open={sidebarState}>
+                      <AppSideBar />
+                    </SidebarProvider>
+                  </NextThemesProvider>
+                </ActionContext.Provider>
+              </SidebarStateContext.Provider>
             </MessagesContext.Provider>
           </UserDetailContext.Provider>
         </PayPalScriptProvider>
